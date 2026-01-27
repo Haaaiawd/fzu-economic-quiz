@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>经济学测验集合</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans SC', system-ui, sans-serif; background: #f3f4f6; min-height: 100vh; }
+
+    .home-page { min-height: 100vh; padding: 24px; }
+    .home-header { max-width: 896px; margin: 0 auto 48px; padding-top: 32px; }
+    .home-title { font-size: 48px; font-weight: 900; margin-bottom: 16px; }
+    .home-subtitle { font-size: 20px; color: #6b7280; font-weight: 500; }
+    .quiz-grid { max-width: 896px; margin: 0 auto; display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+    .quiz-card { border: 3px solid #000; box-shadow: 6px 6px 0 0 #000; padding: 24px; cursor: pointer; transition: all 0.15s ease; background: #fff; }
+    .quiz-card:hover { box-shadow: 8px 8px 0 0 #000; transform: translate(-2px, -2px); }
+    .quiz-card.locked { opacity: 0.5; pointer-events: none; }
+    .quiz-tag { display: inline-block; padding: 4px 12px; border: 2px solid #000; font-size: 12px; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; }
+    .quiz-tag.yellow { background: #facc15; }
+    .quiz-tag.purple { background: #c084fc; }
+    .quiz-tag.blue { background: #60a5fa; }
+    .quiz-tag.green { background: #4ade80; }
+    .quiz-tag.gray { background: #9ca3af; }
+    .quiz-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .quiz-desc { color: #6b7280; font-weight: 500; }
+    .quiz-tags { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { padding: 2px 8px; border: 2px solid #000; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .quiz-lock { margin-top: 16px; display: flex; align-items: center; gap: 8px; color: #6b7280; font-weight: 500; }
+
+    .quiz-page { min-height: 100vh; padding-bottom: 100px; }
+    .quiz-header { background: #fff; border-bottom: 3px solid #000; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+    .back-btn { display: flex; align-items: center; gap: 4px; font-weight: 700; background: none; border: none; cursor: pointer; }
+    .back-btn:hover { text-decoration: underline; }
+    .quiz-progress-indicator { background: #000; color: #fff; padding: 4px 12px; font-weight: 800; font-size: 14px; }
+    .progress-bar { height: 4px; background: #e5e7eb; }
+    .progress-bar-fill { height: 100%; background: #000; transition: width 0.3s ease; }
+    .quiz-main { max-width: 672px; margin: 0 auto; padding: 16px; }
+    .quiz-question-card { background: #fff; border: 3px solid #000; padding: 24px; margin-bottom: 24px; }
+    .question-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .question-type { padding: 4px 8px; border: 2px solid #000; font-size: 12px; font-weight: 800; }
+    .question-progress { font-size: 14px; color: #6b7280; font-weight: 500; }
+    .question-text { font-size: 20px; font-weight: 700; line-height: 1.4; margin-bottom: 24px; }
+    .options-list { display: flex; flex-direction: column; gap: 12px; }
+    .option-btn { width: 100%; padding: 16px; text-align: left; font-weight: 500; display: flex; justify-content: space-between; align-items: center; border: 3px solid #000; background: #fff; cursor: pointer; font-family: inherit; font-size: 16px; transition: all 0.15s ease; }
+    .option-btn:hover:not(:disabled) { background: #f9fafb; }
+    .option-btn:disabled { cursor: default; }
+    .option-btn.selected { background: #000; color: #fff; }
+    .option-btn.correct { background: #dcfce7; border-color: #16a34a; color: #166534; }
+    .option-btn.incorrect { background: #fee2e2; border-color: #dc2626; color: #991b1b; }
+    .option-btn.disabled { opacity: 0.4; }
+    .option-content { display: flex; align-items: center; gap: 12px; }
+    .option-checkbox { width: 20px; height: 20px; border: 2px solid currentColor; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .checkbox-check { width: 12px; height: 12px; background: currentColor; }
+
+    .rationale-box { margin-top: 16px; padding-top: 16px; border-top: 2px solid #000; }
+    .rationale-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    .rationale-text { color: #374151; line-height: 1.6; font-style: italic; font-size: 14px; }
+
+    .quiz-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 3px solid #000; padding: 16px; z-index: 10; }
+    .quiz-footer-inner { max-width: 672px; margin: 0 auto; display: flex; gap: 16px; }
+    .nav-btn { flex: 1; padding: 12px; font-weight: 700; font-family: inherit; font-size: 16px; cursor: pointer; border: 3px solid #000; background: #fff; box-shadow: 4px 4px 0 0 #000; transition: all 0.15s ease; }
+    .nav-btn:hover:not(:disabled) { box-shadow: 6px 6px 0 0 #000; transform: translate(-2px, -2px); }
+    .nav-btn:active:not(:disabled) { box-shadow: 2px 2px 0 0 #000; transform: translate(2px, 2px); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-btn.primary { background: #000; color: #fff; }
+    .nav-btn.primary:hover:not(:disabled) { background: #222; }
+
+    .result-page { min-height: 100vh; padding: 24px; display: flex; align-items: center; justify-content: center; }
+    .result-card { background: #fff; border: 3px solid #000; box-shadow: 12px 12px 0 0 #000; padding: 32px; max-width: 400px; width: 100%; text-align: center; }
+    .result-title { font-size: 24px; font-weight: 900; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.1em; }
+    .score-display { margin-bottom: 24px; }
+    .score-number { font-size: 72px; font-weight: 900; }
+    .score-total { font-size: 24px; color: #9ca3af; }
+    .grade-text { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .grade-excellent { color: #16a34a; }
+    .grade-good { color: #2563eb; }
+    .grade-pass { color: #ca8a04; }
+    .grade-fail { color: #dc2626; }
+    .percentage-text { color: #6b7280; font-weight: 500; margin-bottom: 24px; }
+    .result-actions { display: flex; flex-direction: column; gap: 12px; }
+    .result-actions button { width: 100%; padding: 16px; font-weight: 700; font-size: 18px; font-family: inherit; cursor: pointer; border: 3px solid #000; box-shadow: 4px 4px 0 0 #000; transition: all 0.15s ease; }
+    .result-actions button:hover { box-shadow: 6px 6px 0 0 #000; transform: translate(-2px, -2px); }
+    .result-actions button.primary { background: #000; color: #fff; }
+    .result-actions button.primary:hover { background: #222; }
+
+    .icon-sm { width: 16px; height: 16px; }
+    .icon-lg { width: 32px; height: 32px; }
+    .icon-xl { width: 64px; height: 64px; }
+    .text-green { color: #16a34a; }
+    .text-red { color: #dc2626; }
+
+    .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 640px) {
+      .home-title { font-size: 36px; }
+      .quiz-grid { grid-template-columns: 1fr; }
+      .quiz-card { padding: 20px; }
+      .quiz-question-card { padding: 16px; }
+      .question-text { font-size: 18px; }
+      .score-number { font-size: 56px; }
+      .result-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // ==================== 测验数据 ====================
+    const quizList = [
+      {
+        id: 'micro-econ-02',
+        title: '微观经济学02',
+        description: '需求、供给与弹性专题测验',
+        questionCount: 31,
+        color: 'yellow',
+        tags: ['微观经济学', '需求', '供给', '弹性']
+      },
+      {
+        id: 'micro-econ-03',
+        title: '微观经济学03',
+        description: '价格理论判断题测验',
+        questionCount: 18,
+        color: 'purple',
+        tags: ['微观经济学', '价格', '判断题']
+      },
+      {
+        id: 'placeholder-1',
+        title: '宏观经济学基础',
+        description: '国民收入与货币政策',
+        questionCount: 0,
+        locked: true,
+        color: 'blue',
+        tags: ['宏观经济学']
+      },
+      {
+        id: 'placeholder-2',
+        title: '市场结构理论',
+        description: '完全竞争与垄断市场分析',
+        questionCount: 0,
+        locked: true,
+        color: 'green',
+        tags: ['市场结构']
+      }
+    ];
+
+    const quizDataMap = {
+      'micro-econ-02': {
+        id: 'micro-econ-02',
+        title: '微观经济学02',
+        description: '需求、供给与弹性专题测验',
+        questions: [
+          { id: 1, question: "有下列哪些因素会使需求曲线移动？（不定项选择）", options: ["消费者收入变化", "商品本身价格变化", "消费者偏好变化", "相关商品价格变化"], answer: [0, 2, 3], isMultiple: true, rationale: "需求曲线的移动（位移）是由价格以外的因素引起的。收入、偏好、相关品价格的变化都会改变整个需求关系，导致曲线平移。而商品本身价格变化引起的是需求量的变动，即点在曲线上的移动。" },
+          { id: 2, question: "假定某商品的价格从10美元下降到9美元，需求量从70增加到75，则需求为：", options: ["富有弹性", "缺乏弹性", "单位弹性", "难以确定"], answer: 1, isMultiple: false, rationale: "价格变动百分比为10%，需求量变动百分比为(5/70)≈7.1%。弹性系数小于1，故为缺乏弹性。" },
+          { id: 3, question: "假定商品x和商品y的需求交叉弹性是 -2，则：", options: ["x和y是替代品", "x和y是互补品", "x和y是正常品", "x和y是劣等品"], answer: 1, isMultiple: false, rationale: "交叉弹性为负值表示两种商品需求方向相反，互为互补品。" },
+          { id: 4, question: "假定生产某种产品的原材料价格上升，则这种产品的：", options: ["需求曲线向左移动", "需求曲线向右移动", "供给曲线向左移动", "供给曲线向右移动"], answer: 2, isMultiple: false, rationale: "成本上升导致供给减少，表现为供给曲线向左上方移动。" },
+          { id: 5, question: "假定某商品的供给曲线是一条过原点的直线，那么该商品供给的价格弹性：", options: ["随价格的变化而变化", "恒等于1", "大于1", "小于1"], answer: 1, isMultiple: false, rationale: "几何特性证明，任何过原点的直线供给曲线，其点弹性系数恒等于1。" },
+          { id: 6, question: "下列哪种情况不正确？", options: ["如果需求减少，供给增加，均衡价格将下降", "如果需求增加，供给减少，均衡价格将上升", "如果需求减少，供给减少，均衡价格将上升", "如果需求增加，供给增加，均衡产量将增加"], answer: 2, isMultiple: false, rationale: "需求减少且供给减少时，均衡产量必减，但价格变动取决于两者的相对变化程度，不确定。" },
+          { id: 7, question: "在需求和供给同时减少的情况下，将出现：", options: ["均衡价格下降，均衡产量减少", "均衡价格下降，均衡产量无法确定", "均衡价格无法确定，均衡产量减少", "均衡价格上升，均衡产量减少"], answer: 2, isMultiple: false, rationale: "需求减(P↓Q↓)，供给减(P↑Q↓)，共同点是Q必减，P不确定。" },
+          { id: 8, question: "在其他条件不变的情况下，供给弹性的大小：", options: ["与生产者税收负担成正比", "与生产者税收负担成反比", "与税收分配比例无关", "取决于消费者收入"], answer: 1, isMultiple: false, rationale: "供给弹性越大，生产者转嫁税收能力越强，承担的份额越小。" },
+          { id: 9, question: "在其他条件不变的情况下，需求弹性的大小：", options: ["与消费者的税收负担成反比", "与消费者的税收负担成正比", "与生产者的税收负担无关", "取决于生产成本"], answer: 0, isMultiple: false, rationale: "需求弹性越大，消费者对价格越敏感，越难被转嫁税收。" },
+          { id: 10, question: "均衡价格随着：", options: ["需求和供给的增加而上升", "需求的减少和供给的增加而上升", "需求的增加和供给的减少而上升", "需求和供给的减少而上升"], answer: 2, isMultiple: false, rationale: "需求增加和供给减少都会推动均衡价格上涨。" },
+          { id: 11, question: "在家庭收入为年均8000元的情况下，不能作为需求的是：", options: ["购买价格为50元的中山装", "购买价值5万元的小汽车", "购买2500元左右的彩店", "购买1500元左右的冰箱"], answer: 1, isMultiple: false, rationale: "需求必须包含购买欲望和购买能力。5万元超出了8000元收入者的支付能力。" },
+          { id: 12, question: "下列几组商品的交叉价格弹性为负向的有：", options: ["面粉和大米", "羊肉和牛肉", "录音机和磁带", "花生油和豆油"], answer: 2, isMultiple: false, rationale: "负向交叉弹性意味着互补关系。录音机和磁带是互补品。" },
+          { id: 13, question: "当出租车租金下调后，对公共汽车服务的：", options: ["需求曲线向左移动", "需求曲线向右移动", "供给曲线向左移动", "无法确定"], answer: 0, isMultiple: false, rationale: "替代品价格下降，导致本商品需求减少，曲线左移。" },
+          { id: 14, question: "粮食市场的需求是缺乏弹性的，当粮食产量因灾害而减少时：", options: ["生产者收入减少", "生产者收入增加，价格大幅上升", "生产者收入不变", "需求量大幅减少"], answer: 1, isMultiple: false, rationale: "谷贱伤农的反向逻辑：歉收时，粮价上升比例大于销量下降比例，总收益增加。" },
+          { id: 15, question: "下列商品中，需求价格弹性最大的是：", options: ["食盐", "面粉", "化妆品", "大米"], answer: 2, isMultiple: false, rationale: "必需品弹性小，奢侈品或非必需品弹性大。" },
+          { id: 16, question: "需求量的变动是指：", options: ["由于价格变动引起的需求量变动", "需求曲线的平移", "非价格因素引起的变动", "整个需求表的变动"], answer: 0, isMultiple: false, rationale: "需求量的变动仅由价格变动引起，表现为线上的点移动。" },
+          { id: 17, question: "下列几组商品的交叉价格弹性为正向的有：", options: ["大米和食盐", "苹果和自行车", "猪肉和牛肉", "录音机和磁带"], answer: 2, isMultiple: false, rationale: "正向交叉弹性意味着替代关系。猪肉和牛肉互为替代品。" },
+          { id: 18, question: "某一时期彩店的需求曲线向左平行移动的原因可以是：", options: ["彩店价格下降", "预期价格上升", "消费者的收入水平下降", "替代品价格上升"], answer: 2, isMultiple: false, rationale: "收入下降导致正常品的需求减少，曲线左移。" },
+          { id: 19, question: "食盐市场的需求是缺乏弹性的，由于非价格因素使产量下降20%，在这种情况下：", options: ["生产者收入减少", "生产者收入增加，价格上升超过20%", "生产者收入增加，价格上升低于20%", "生产者收入不变"], answer: 1, isMultiple: false, rationale: "缺乏弹性时，价格上升幅度将超过供应下降幅度，增加总收入。" },
+          { id: 20, question: "当某消费者的收入上升20%，其对某商品的需求量上升5%，则该商品的需求收入弹性：", options: ["大于1", "小于1", "等于1", "等于0"], answer: 1, isMultiple: false, rationale: "5% / 20% = 0.25 < 1。属于必需品性质的正常商品。" },
+          { id: 21, question: "需求函数从 Qd=400-5P 变为 Qd=600-5P，均衡价格将：", options: ["低于50", "高于50", "等于50", "不定"], answer: 1, isMultiple: false, rationale: "需求增加，在供给不变的情况下，均衡价格上升。" },
+          { id: 22, question: "替代品价升使需求量+50，互补品价升使需求量-80，共同作用下需求数量：", options: ["增加30单位", "减少30单位", "增加130单位", "减少130单位"], answer: 1, isMultiple: false, rationale: "50 + (-80) = -30。" },
+          { id: 23, question: "以下因素导致小麦的供给曲线向左移动：", options: ["小麦的价格下降", "种植技术提高", "小麦成本上升", "小麦价格上升"], answer: 2, isMultiple: false, rationale: "投入品成本上升是导致供给曲线左移的核心因素。" },
+          { id: 24, question: "在两种替代品之间，其中一种商品价格上升，会使另一种商品的均衡价格：", options: ["上升", "下降", "不变", "不确定"], answer: 0, isMultiple: false, rationale: "替代品A涨价 → B需求增加 → B均衡价格上升。" },
+          { id: 25, question: "在两种互补品之间，其中一种商品价格上升，会使另一种商品均衡价格：", options: ["上升", "下降", "不变", "不确定"], answer: 1, isMultiple: false, rationale: "互补品A涨价 → B需求减少 → B均衡价格下降。" },
+          { id: 26, question: "影响一种商品需求数量的因素包括：（不定项选择）", options: ["商品本身的价格", "消费者的收入水平", "相关商品价格", "消费者的偏好"], answer: [0, 1, 2, 3], isMultiple: true, rationale: "所有这些因素（价格、收入、相关品价格、偏好）都会综合影响消费者的需求决定。" },
+          { id: 27, question: "在一般情况下，供给曲线：", options: ["向右上方倾斜", "向右下方倾斜", "水平", "垂直"], answer: 0, isMultiple: false, rationale: "供给规律：价格与供给量正相关。" },
+          { id: 28, question: "其他因素不变，某种商品的价格下降，这将产生：", options: ["需求增加", "需求减少", "需求量增加", "需求量减少"], answer: 2, isMultiple: false, rationale: "商品本身价格变动产生的是需求量的变动。" },
+          { id: 29, question: "消费者预期某种物品未来价格上升，则对该物品的当前需求会：", options: ["增加", "减少", "不变", "无法确定"], answer: 0, isMultiple: false, rationale: "预期未来涨价会引发当前的抢购或提前消费。" },
+          { id: 30, question: "下列因素中哪一种不会使需求曲线移动：", options: ["收入变化", "商品本身价格下降", "其他商品价格下降", "偏好改变"], answer: 1, isMultiple: false, rationale: "商品本身价格变动仅引起点在曲线上的移动，而非曲线整体平移。" },
+          { id: 31, question: "一种商品价格的下降对其互补品最直接的影响是：", options: ["互补品的需求曲线向右移动", "互补品的需求曲线向左移动", "互补品的供给曲线向右移动", "互补品的供给曲线向左移动"], answer: 0, isMultiple: false, rationale: "本品降价导致本品需求量增加，进而带动互补品需求增加（曲线右移）。" }
+        ]
+      },
+      'micro-econ-03': {
+        id: 'micro-econ-03',
+        title: '微观经济学03',
+        description: '价格理论判断题测验',
+        questions: [
+          { id: 1, question: "价格分析是微观经济学分析的核心。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "价格理论是微观经济学的核心，市场机制通过价格来配置资源。" },
+          { id: 2, question: "微观经济学的研究对象是包括单个消费者、单个生产者、单个市场在内的个体经济单位。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "微观经济学研究个体经济单位的行为和决策，包括消费者、生产者和市场。" },
+          { id: 3, question: "若某商品的需求价格弹性Ed=0.6，在其他条件不变的情况下，卖者提高价格肯定增加销售收入。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "需求缺乏弹性(Ed<1)时，价格上涨会导致需求量减少幅度小于价格上涨幅度，因此销售收入增加。" },
+          { id: 4, question: "在其他条件不变的情况下，需求缺乏弹性的商品的价格与销售收入呈同方向变动关系。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "需求缺乏弹性时，价格上涨使销售收入增加，价格下降使销售收入减少。" },
+          { id: 5, question: "需求量的变动是指商品本身价格变动所引起的该商品的需求数量的变动。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "需求量的变动是指沿着同一条需求曲线的变动，由商品本身价格变动引起。而需求曲线的移动是由非价格因素引起的。" },
+          { id: 6, question: "在其他条件不变的情况下，当消费者的收入发生变化时，会引起需求曲线的移动。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "消费者收入是影响需求的非价格因素之一，收入变化会导致需求曲线平移。" },
+          { id: 7, question: "Ed＞1的商品，在其他条件不变的情况下，降低价格会增加厂商的销售收入。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "需求富有弹性(Ed>1)时，价格下降会导致需求量增加幅度大于价格下降幅度，因此销售收入增加。" },
+          { id: 8, question: "若某商品的Ed＜1，表明当该商品价格下降20%时，该商品需求量减少小于20%。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "Ed<1表示需求缺乏弹性，价格下降20%时，需求量减少幅度小于20%，即减少量小于20%。" },
+          { id: 9, question: "卖者提高价格肯定会增加销售收入。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "不一定。如果商品需求富有弹性(Ed>1)，提高价格反而会减少销售收入。只有当Ed<1时，提高价格才能增加收入。" },
+          { id: 10, question: "在几何图形上，供给量的变动表现为商品的价格-供给量组合点沿着同一条既定的供给曲线运动。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "供给量的变动是由商品本身价格变动引起的，表现为沿着供给曲线的移动。" },
+          { id: 11, question: "在几何图形上，需求水平的变动表现为商品的价格-需求量组合点沿着同一条既定的需求曲线运动。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "需求水平的变动（由非价格因素引起）表现为需求曲线的平移，而非沿着需求曲线的移动。沿着需求曲线移动的是需求量的变动。" },
+          { id: 12, question: "当两种商品中一种商品的价格发生变动时，这两种商品的需求量都同时增加或减少，则这两种商品的需求交叉价格弹性系数为正。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "如果两种商品是替代品，一种商品价格变动使另一种商品需求量同方向变动，交叉弹性为正。如果两种商品是互补品，交叉弹性为负。题目描述的是替代品关系。" },
+          { id: 13, question: "某商品的可替代品越多，相近程度越高，则该商品需求弹性越大。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "可替代品越多，消费者越容易转向其他商品，需求价格弹性越大。" },
+          { id: 14, question: "商品用途越广，需求价格弹性越大。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "商品用途越广，消费者对价格越敏感，价格上涨时更容易减少用量或寻找替代用途，因此弹性越大。" },
+          { id: 15, question: "任何情况下商品的需求量与价格都是反方向变化的。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "这是吉芬商品的特殊情况。吉芬商品的需求量与价格同方向变动，因为其收入效应大于替代效应。" },
+          { id: 16, question: "当对农产品的需求缺乏弹性时，粮食丰收，粮价下跌，农民收入反而会减少。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "农产品需求缺乏弹性，丰收导致供给增加，价格大幅下跌，收入减少。这就是'谷贱伤农'现象。" },
+          { id: 17, question: "如果两种商品具有替代关系，则相应的需求交叉价格弹性系数为负。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "替代品的交叉价格弹性系数为正，因为一种商品价格上涨会导致另一种商品需求量增加。互补品的交叉弹性才为负。" },
+          { id: 18, question: "正常物品的需求量与消费者的收入水平呈同方向变动。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "正常物品的定义就是需求量与收入同方向变动。收入增加，需求量增加；收入减少，需求量减少。" }
+        ]
+      }
+    };
+
+    // ==================== 图标组件 ====================
+    const CheckIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    );
+
+    const XIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    );
+
+    const BackIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    );
+
+    const LockIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+    );
+
+    const BookIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+    );
+
+    const ChartIcon = ({ className }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+    );
+
+    // ==================== 组件 ====================
+    function HomePage({ onSelectQuiz }) {
+      return (
+        <div className="home-page">
+          <header className="home-header">
+            <h1 className="home-title">Quiz Hub</h1>
+            <p className="home-subtitle">选择要开始的测验</p>
+          </header>
+          <main className="quiz-grid">
+            {quizList.map((quiz) => (
+              <div
+                key={quiz.id}
+                className={`quiz-card ${quiz.locked ? 'locked' : ''}`}
+                onClick={() => !quiz.locked && onSelectQuiz(quiz.id)}
+              >
+                <div className={`quiz-tag ${quiz.color}`}>
+                  {quiz.questionCount > 0 ? `${quiz.questionCount} 题` : '即将推出'}
+                </div>
+                <h2 className="quiz-title">{quiz.title}</h2>
+                <p className="quiz-desc">{quiz.description}</p>
+                {quiz.tags && quiz.tags.length > 0 && (
+                  <div className="quiz-tags">
+                    {quiz.tags.map((tag, idx) => <span key={idx} className="tag">{tag}</span>)}
+                  </div>
+                )}
+                {quiz.locked && (
+                  <div className="quiz-lock">
+                    <LockIcon className="icon-sm" />
+                    <span>锁定</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </main>
+        </div>
+      );
+    }
+
+    function QuizCard({ question, index, total, onSelect, selectedAnswers, showRationale }) {
+      const currentSelection = selectedAnswers[question.id];
+      const isAnswered = currentSelection !== undefined;
+
+      const getOptionClass = (idx) => {
+        let classes = 'option-btn';
+        const isSelected = question.isMultiple ? currentSelection?.includes(idx) : currentSelection === idx;
+        const correctAns = question.answer;
+        const isCorrect = question.isMultiple ? correctAns.includes(idx) : correctAns === idx;
+
+        if (isAnswered) {
+          if (isCorrect) classes += ' correct';
+          else if (isSelected && !isCorrect) classes += ' incorrect';
+          else classes += ' disabled';
+        } else {
+          if (isSelected) classes += ' selected';
+        }
+        return classes;
+      };
+
+      const getIcon = (idx) => {
+        if (!isAnswered) return null;
+        const correctAns = question.answer;
+        const isCorrect = question.isMultiple ? correctAns.includes(idx) : correctAns === idx;
+        if (isCorrect) return <CheckIcon className="icon-sm text-green" />;
+        if (currentSelection === idx && !isCorrect) return <XIcon className="icon-sm text-red" />;
+        return null;
+      };
+
+      return (
+        <div className="quiz-question-card">
+          <div className="question-header">
+            <span className="question-type">{question.isMultiple ? '不定项' : '单选'}</span>
+            <span className="question-progress">{index + 1} / {total}</span>
+          </div>
+          <h3 className="question-text">{question.question}</h3>
+          <div className="options-list">
+            {question.options.map((opt, idx) => (
+              <button key={idx} onClick={() => !isAnswered && onSelect(idx)} disabled={isAnswered} className={getOptionClass(idx)}>
+                <span className="option-content">
+                  {question.isMultiple && (
+                    <span className="option-checkbox">
+                      {currentSelection?.includes(idx) && <span className="checkbox-check" />}
+                    </span>
+                  )}
+                  {opt}
+                </span>
+                {getIcon(idx)}
+              </button>
+            ))}
+          </div>
+          {showRationale && (
+            <div className="rationale-box animate-fade-in">
+              <div className="rationale-header">
+                <BookIcon className="icon-sm" />
+                <span>解析</span>
+              </div>
+              <p className="rationale-text">{question.rationale}</p>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function ResultPage({ score, total, onRestart, onBack }) {
+      const percentage = Math.round((score / total) * 100);
+      let grade = '', gradeClass = '';
+      if (percentage >= 90) { grade = '优秀'; gradeClass = 'grade-excellent'; }
+      else if (percentage >= 70) { grade = '良好'; gradeClass = 'grade-good'; }
+      else if (percentage >= 60) { grade = '及格'; gradeClass = 'grade-pass'; }
+      else { grade = '需努力'; gradeClass = 'grade-fail'; }
+
+      return (
+        <div className="result-page">
+          <div className="result-card">
+            <ChartIcon className="icon-xl" />
+            <h2 className="result-title">测验结果</h2>
+            <div className="score-display">
+              <span className="score-number">{score}</span>
+              <span className="score-total"> / {total}</span>
+            </div>
+            <p className={`grade-text ${gradeClass}`}>{grade}</p>
+            <p className="percentage-text">正确率 {percentage}%</p>
+            <div className="result-actions">
+              <button onClick={onRestart} className="primary">再测一次</button>
+              <button onClick={onBack}>返回主页</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function QuizPage({ quizId, onBack }) {
+      const quiz = quizDataMap[quizId];
+      const [currentIndex, setCurrentIndex] = React.useState(0);
+      const [selectedAnswers, setSelectedAnswers] = React.useState({});
+      const [showRationale, setShowRationale] = React.useState(false);
+      const [score, setScore] = React.useState(0);
+
+      if (!quiz) {
+        return (
+          <div style={{ padding: '40px', textAlign: 'center' }}>
+            <p>测验不存在</p>
+            <button onClick={onBack} className="nav-btn" style={{ marginTop: '20px' }}>返回</button>
+          </div>
+        );
+      }
+
+      const question = quiz.questions[currentIndex];
+      const isLastQuestion = currentIndex === quiz.questions.length - 1;
+
+      const handleMultiSelect = (idx) => {
+        if (selectedAnswers[question.id] !== undefined) return;
+        const current = selectedAnswers[question.id] || [];
+        const newSelection = current.includes(idx) ? current.filter(i => i !== idx) : [...current, idx];
+        handleSelect(newSelection);
+      };
+
+      const handleSingleSelect = (idx) => {
+        if (selectedAnswers[question.id] !== undefined) return;
+        handleSelect(idx);
+      };
+
+      const handleSelect = (selection) => {
+        const isCorrect = question.isMultiple
+          ? selection.every(i => question.answer.includes(i)) && selection.length === question.answer.length
+          : selection === question.answer;
+        setSelectedAnswers({ ...selectedAnswers, [question.id]: selection });
+        setShowRationale(true);
+        if (isCorrect) setScore(s => s + 1);
+      };
+
+      const goNext = () => {
+        if (isLastQuestion) setCurrentIndex(-1);
+        else {
+          const nextIdx = currentIndex + 1;
+          setCurrentIndex(nextIdx);
+          setShowRationale(selectedAnswers[quiz.questions[nextIdx].id] !== undefined);
+        }
+      };
+
+      const goPrev = () => {
+        if (currentIndex > 0) {
+          setCurrentIndex(currentIndex - 1);
+          setShowRationale(true);
+        }
+      };
+
+      const restart = () => { setCurrentIndex(0); setSelectedAnswers({}); setShowRationale(false); setScore(0); };
+
+      if (currentIndex === -1) return <ResultPage score={score} total={quiz.questions.length} onRestart={restart} onBack={onBack} />;
+
+      return (
+        <div className="quiz-page">
+          <header className="quiz-header">
+            <button onClick={onBack} className="back-btn">
+              <BackIcon className="icon-sm" /> 返回
+            </button>
+            <span className="quiz-progress-indicator">{currentIndex + 1} / {quiz.questions.length}</span>
+          </header>
+          <div className="progress-bar">
+            <div className="progress-bar-fill" style={{ width: `${((currentIndex + 1) / quiz.questions.length) * 100}%` }} />
+          </div>
+          <main className="quiz-main">
+            <QuizCard
+              question={question}
+              index={currentIndex}
+              total={quiz.questions.length}
+              onSelect={question.isMultiple ? handleMultiSelect : handleSingleSelect}
+              selectedAnswers={selectedAnswers}
+              showRationale={showRationale}
+            />
+          </main>
+          <footer className="quiz-footer">
+            <div className="quiz-footer-inner">
+              <button onClick={goPrev} disabled={currentIndex === 0} className="nav-btn">上一题</button>
+              <button onClick={goNext} className="nav-btn primary">{isLastQuestion ? '查看结果' : '下一题 →'}</button>
+            </div>
+          </footer>
+        </div>
+      );
+    }
+
+    function App() {
+      const [currentView, setCurrentView] = React.useState('home');
+      const [currentQuizId, setCurrentQuizId] = React.useState(null);
+
+      const handleSelectQuiz = (quizId) => {
+        setCurrentQuizId(quizId);
+        setCurrentView('quiz');
+      };
+
+      const handleBackHome = () => {
+        setCurrentView('home');
+        setCurrentQuizId(null);
+      };
+
+      if (currentView === 'quiz' && currentQuizId) {
+        return <QuizPage quizId={currentQuizId} onBack={handleBackHome} />;
+      }
+      return <HomePage onSelectQuiz={handleSelectQuiz} />;
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
