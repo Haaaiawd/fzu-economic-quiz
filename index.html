@@ -112,585 +112,28 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    // ==================== 测验数据 ====================
-    const quizList = [
-      {
-        id: 'micro-econ-02',
-        title: '微观经济学02',
-        description: '需求、供给与弹性专题测验',
-        questionCount: 31,
-        color: 'yellow',
-        tags: ['微观经济学', '需求', '供给', '弹性']
-      },
-      {
-        id: 'micro-econ-03',
-        title: '微观经济学03',
-        description: '价格理论判断题测验',
-        questionCount: 18,
-        color: 'purple',
-        tags: ['微观经济学', '价格', '判断题']
-      },
-      {
-        id: 'micro-econ-04-select',
-        title: '微观经济学04-选择',
-        description: '消费者行为理论不定项选择题',
-        questionCount: 32,
-        color: 'blue',
-        tags: ['微观经济学', '消费者行为', '效用论']
-      },
-      {
-        id: 'micro-econ-04-judge',
-        title: '微观经济学04-判断',
-        description: '消费者行为理论判断题测验',
-        questionCount: 18,
-        color: 'green',
-        tags: ['微观经济学', '消费者行为', '判断题']
-      },
-      {
-        id: 'placeholder-1',
-        title: '宏观经济学基础',
-        description: '国民收入与货币政策',
-        questionCount: 0,
-        locked: true,
-        color: 'gray',
-        tags: ['宏观经济学']
-      },
-      {
-        id: 'placeholder-2',
-        title: '市场结构理论',
-        description: '完全竞争与垄断市场分析',
-        questionCount: 0,
-        locked: true,
-        color: 'green',
-        tags: ['市场结构']
-      }
-    ];
-
-    const quizDataMap = {
-      'micro-econ-02': {
-        id: 'micro-econ-02',
-        title: '微观经济学02',
-        description: '需求、供给与弹性专题测验',
-        questions: [
-          { id: 1, question: "有下列哪些因素会使需求曲线移动？（不定项选择）", options: ["消费者收入变化", "商品本身价格变化", "消费者偏好变化", "相关商品价格变化"], answer: [0, 2, 3], isMultiple: true, rationale: "需求曲线的移动（位移）是由价格以外的因素引起的。收入、偏好、相关品价格的变化都会改变整个需求关系，导致曲线平移。而商品本身价格变化引起的是需求量的变动，即点在曲线上的移动。" },
-          { id: 2, question: "假定某商品的价格从10美元下降到9美元，需求量从70增加到75，则需求为：", options: ["富有弹性", "缺乏弹性", "单位弹性", "难以确定"], answer: 1, isMultiple: false, rationale: "价格变动百分比为10%，需求量变动百分比为(5/70)≈7.1%。弹性系数小于1，故为缺乏弹性。" },
-          { id: 3, question: "假定商品x和商品y的需求交叉弹性是 -2，则：", options: ["x和y是替代品", "x和y是互补品", "x和y是正常品", "x和y是劣等品"], answer: 1, isMultiple: false, rationale: "交叉弹性为负值表示两种商品需求方向相反，互为互补品。" },
-          { id: 4, question: "假定生产某种产品的原材料价格上升，则这种产品的：", options: ["需求曲线向左移动", "需求曲线向右移动", "供给曲线向左移动", "供给曲线向右移动"], answer: 2, isMultiple: false, rationale: "成本上升导致供给减少，表现为供给曲线向左上方移动。" },
-          { id: 5, question: "假定某商品的供给曲线是一条过原点的直线，那么该商品供给的价格弹性：", options: ["随价格的变化而变化", "恒等于1", "大于1", "小于1"], answer: 1, isMultiple: false, rationale: "几何特性证明，任何过原点的直线供给曲线，其点弹性系数恒等于1。" },
-          { id: 6, question: "下列哪种情况不正确？", options: ["如果需求减少，供给增加，均衡价格将下降", "如果需求增加，供给减少，均衡价格将上升", "如果需求减少，供给减少，均衡价格将上升", "如果需求增加，供给增加，均衡产量将增加"], answer: 2, isMultiple: false, rationale: "需求减少且供给减少时，均衡产量必减，但价格变动取决于两者的相对变化程度，不确定。" },
-          { id: 7, question: "在需求和供给同时减少的情况下，将出现：", options: ["均衡价格下降，均衡产量减少", "均衡价格下降，均衡产量无法确定", "均衡价格无法确定，均衡产量减少", "均衡价格上升，均衡产量减少"], answer: 2, isMultiple: false, rationale: "需求减(P↓Q↓)，供给减(P↑Q↓)，共同点是Q必减，P不确定。" },
-          { id: 8, question: "在其他条件不变的情况下，供给弹性的大小：", options: ["与生产者税收负担成正比", "与生产者税收负担成反比", "与税收分配比例无关", "取决于消费者收入"], answer: 1, isMultiple: false, rationale: "供给弹性越大，生产者转嫁税收能力越强，承担的份额越小。" },
-          { id: 9, question: "在其他条件不变的情况下，需求弹性的大小：", options: ["与消费者的税收负担成反比", "与消费者的税收负担成正比", "与生产者的税收负担无关", "取决于生产成本"], answer: 0, isMultiple: false, rationale: "需求弹性越大，消费者对价格越敏感，越难被转嫁税收。" },
-          { id: 10, question: "均衡价格随着：", options: ["需求和供给的增加而上升", "需求的减少和供给的增加而上升", "需求的增加和供给的减少而上升", "需求和供给的减少而上升"], answer: 2, isMultiple: false, rationale: "需求增加和供给减少都会推动均衡价格上涨。" },
-          { id: 11, question: "在家庭收入为年均8000元的情况下，不能作为需求的是：", options: ["购买价格为50元的中山装", "购买价值5万元的小汽车", "购买2500元左右的彩店", "购买1500元左右的冰箱"], answer: 1, isMultiple: false, rationale: "需求必须包含购买欲望和购买能力。5万元超出了8000元收入者的支付能力。" },
-          { id: 12, question: "下列几组商品的交叉价格弹性为负向的有：", options: ["面粉和大米", "羊肉和牛肉", "录音机和磁带", "花生油和豆油"], answer: 2, isMultiple: false, rationale: "负向交叉弹性意味着互补关系。录音机和磁带是互补品。" },
-          { id: 13, question: "当出租车租金下调后，对公共汽车服务的：", options: ["需求曲线向左移动", "需求曲线向右移动", "供给曲线向左移动", "无法确定"], answer: 0, isMultiple: false, rationale: "替代品价格下降，导致本商品需求减少，曲线左移。" },
-          { id: 14, question: "粮食市场的需求是缺乏弹性的，当粮食产量因灾害而减少时：", options: ["生产者收入减少", "生产者收入增加，价格大幅上升", "生产者收入不变", "需求量大幅减少"], answer: 1, isMultiple: false, rationale: "谷贱伤农的反向逻辑：歉收时，粮价上升比例大于销量下降比例，总收益增加。" },
-          { id: 15, question: "下列商品中，需求价格弹性最大的是：", options: ["食盐", "面粉", "化妆品", "大米"], answer: 2, isMultiple: false, rationale: "必需品弹性小，奢侈品或非必需品弹性大。" },
-          { id: 16, question: "需求量的变动是指：", options: ["由于价格变动引起的需求量变动", "需求曲线的平移", "非价格因素引起的变动", "整个需求表的变动"], answer: 0, isMultiple: false, rationale: "需求量的变动仅由价格变动引起，表现为线上的点移动。" },
-          { id: 17, question: "下列几组商品的交叉价格弹性为正向的有：", options: ["大米和食盐", "苹果和自行车", "猪肉和牛肉", "录音机和磁带"], answer: 2, isMultiple: false, rationale: "正向交叉弹性意味着替代关系。猪肉和牛肉互为替代品。" },
-          { id: 18, question: "某一时期彩店的需求曲线向左平行移动的原因可以是：", options: ["彩店价格下降", "预期价格上升", "消费者的收入水平下降", "替代品价格上升"], answer: 2, isMultiple: false, rationale: "收入下降导致正常品的需求减少，曲线左移。" },
-          { id: 19, question: "食盐市场的需求是缺乏弹性的，由于非价格因素使产量下降20%，在这种情况下：", options: ["生产者收入减少", "生产者收入增加，价格上升超过20%", "生产者收入增加，价格上升低于20%", "生产者收入不变"], answer: 1, isMultiple: false, rationale: "缺乏弹性时，价格上升幅度将超过供应下降幅度，增加总收入。" },
-          { id: 20, question: "当某消费者的收入上升20%，其对某商品的需求量上升5%，则该商品的需求收入弹性：", options: ["大于1", "小于1", "等于1", "等于0"], answer: 1, isMultiple: false, rationale: "5% / 20% = 0.25 < 1。属于必需品性质的正常商品。" },
-          { id: 21, question: "需求函数从 Qd=400-5P 变为 Qd=600-5P，均衡价格将：", options: ["低于50", "高于50", "等于50", "不定"], answer: 1, isMultiple: false, rationale: "需求增加，在供给不变的情况下，均衡价格上升。" },
-          { id: 22, question: "替代品价升使需求量+50，互补品价升使需求量-80，共同作用下需求数量：", options: ["增加30单位", "减少30单位", "增加130单位", "减少130单位"], answer: 1, isMultiple: false, rationale: "50 + (-80) = -30。" },
-          { id: 23, question: "以下因素导致小麦的供给曲线向左移动：", options: ["小麦的价格下降", "种植技术提高", "小麦成本上升", "小麦价格上升"], answer: 2, isMultiple: false, rationale: "投入品成本上升是导致供给曲线左移的核心因素。" },
-          { id: 24, question: "在两种替代品之间，其中一种商品价格上升，会使另一种商品的均衡价格：", options: ["上升", "下降", "不变", "不确定"], answer: 0, isMultiple: false, rationale: "替代品A涨价 → B需求增加 → B均衡价格上升。" },
-          { id: 25, question: "在两种互补品之间，其中一种商品价格上升，会使另一种商品均衡价格：", options: ["上升", "下降", "不变", "不确定"], answer: 1, isMultiple: false, rationale: "互补品A涨价 → B需求减少 → B均衡价格下降。" },
-          { id: 26, question: "影响一种商品需求数量的因素包括：（不定项选择）", options: ["商品本身的价格", "消费者的收入水平", "相关商品价格", "消费者的偏好"], answer: [0, 1, 2, 3], isMultiple: true, rationale: "所有这些因素（价格、收入、相关品价格、偏好）都会综合影响消费者的需求决定。" },
-          { id: 27, question: "在一般情况下，供给曲线：", options: ["向右上方倾斜", "向右下方倾斜", "水平", "垂直"], answer: 0, isMultiple: false, rationale: "供给规律：价格与供给量正相关。" },
-          { id: 28, question: "其他因素不变，某种商品的价格下降，这将产生：", options: ["需求增加", "需求减少", "需求量增加", "需求量减少"], answer: 2, isMultiple: false, rationale: "商品本身价格变动产生的是需求量的变动。" },
-          { id: 29, question: "消费者预期某种物品未来价格上升，则对该物品的当前需求会：", options: ["增加", "减少", "不变", "无法确定"], answer: 0, isMultiple: false, rationale: "预期未来涨价会引发当前的抢购或提前消费。" },
-          { id: 30, question: "下列因素中哪一种不会使需求曲线移动：", options: ["收入变化", "商品本身价格下降", "其他商品价格下降", "偏好改变"], answer: 1, isMultiple: false, rationale: "商品本身价格变动仅引起点在曲线上的移动，而非曲线整体平移。" },
-          { id: 31, question: "一种商品价格的下降对其互补品最直接的影响是：", options: ["互补品的需求曲线向右移动", "互补品的需求曲线向左移动", "互补品的供给曲线向右移动", "互补品的供给曲线向左移动"], answer: 0, isMultiple: false, rationale: "本品降价导致本品需求量增加，进而带动互补品需求增加（曲线右移）。" }
-        ]
-      },
-      'micro-econ-04-select': {
-        id: 'micro-econ-04-select',
-        title: '微观经济学04-选择',
-        description: '消费者行为理论不定项选择题',
-        questions: [
-          {
-            id: 1,
-            question: "基数效用论关于消费者均衡的条件是（  ）",
-            options: ["无差异曲线与预算线相切", "MRSxy=Px/Py", "MUx/Px=MUy/Py", "MUx/MUy=Px/Py"],
-            answer: [2, 3],
-            isMultiple: true,
-            rationale: "基数效用论消费者均衡条件是MUx/Px=MUy/Py，等价于MUx/MUy=Px/Py。MRSxy=Px/Py是序数效用论的条件，两者表述一致但理论基础不同。"
-          },
-          {
-            id: 2,
-            question: "MRSxy递减，意味着当X商品的消费量不断增加时，能代替的Y商品的数量（  ）",
-            options: ["越来越多", "越来越少", "保持不变", "以上均不正确"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "MRSxy递减规律表明，随着X的增加，消费者愿意放弃的Y越来越少，即边际替代率递减。"
-          },
-          {
-            id: 3,
-            question: "设对某一消费者有 MUx/Px＜MUy/Py ，为使他得到的效用最大，他将（  ）",
-            options: ["X、Y的价格不变，增加X的购买量，减少Y的购买量", "X、Y的价格不变，增加Y的购买量，减少X的购买量", "仅当X的价格降低时，才有可能增加X的购买", "仅当Y的价格降低时，才有可能增加Y的购买"],
-            answer: [1, 2],
-            isMultiple: true,
-            rationale: "MUx/Px < MUy/Py 说明最后一单位货币购买Y获得的效用大于购买X。消费者应增加Y减少X。当X价格降低使MUx/Px上升时，才可能增加X购买。"
-          },
-          {
-            id: 4,
-            question: "当消费者对商品X的消费达到饱和点时，则边际效用MUx为（  ）",
-            options: ["正值", "负值", "零", "不确定"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "饱和点意味着再增加消费不会带来额外满足，MU=0。"
-          },
-          {
-            id: 5,
-            question: "基数效用论的基本假设条件有（  ）",
-            options: ["效用是可以衡量的", "MU递减", "MRSxy递减", "货币边际效用不变"],
-            answer: [0, 1, 3],
-            isMultiple: true,
-            rationale: "基数效用论假设效用可衡量、边际效用递减、货币边际效用不变。MRSxy递减是序数效用论的假设。"
-          },
-          {
-            id: 6,
-            question: "正常物品价格上升导致需求量减少的原因在于（  ）",
-            options: ["替代效应使需求量增加，收入效应使需求量减少", "替代效应使需求量增加，收入效应使需求量增加", "替代效应使需求量减少，收入效应使需求量减少", "替代效应使需求量减少，收入效应使需求量增加"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "正常物品价格上升时，替代效应使需求量减少，收入效应也使需求量减少（因实际购买力下降）。两者同向作用。"
-          },
-          {
-            id: 7,
-            question: "当只有商品价格变化时，连接消费者各均衡点的轨迹称作（  ）",
-            options: ["需求曲线", "价格--消费曲线", "恩格尔曲线", "收入--消费曲线"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "价格-消费曲线(PCC)表示在消费者收入和其他商品价格不变时，一种商品价格变化时消费者均衡点的轨迹。"
-          },
-          {
-            id: 8,
-            question: "商品价格变化引起的替代效应，表现为相应的消费者的均衡点（  ）",
-            options: ["沿着原有的无差异曲线移动", "运动到另一条无差异曲线上", "沿着原有的预算线移动", "不变"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "替代效应不改变消费者效用水平，只是沿原无差异曲线移动到新的均衡点。"
-          },
-          {
-            id: 9,
-            question: "低档物品价格下降，其需求量（  ）",
-            options: ["增加", "减少", "替代效应的效果大于收入效应的效果时增加", "替代效应的效果小于收入效应的效果时增加"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "低档物品收入效应使价格下降时需求量减少。若替代效应大于收入效应，总效应仍为增加。"
-          },
-          {
-            id: 10,
-            question: "商品价格变化引起的收入效应，表现为相应的消费者的均衡点沿原有的无差异曲线运动。（  ）",
-            options: ["沿着原有的无差异曲线运动", "运动到另一条无差异曲线上", "不变", "不规则变动"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "收入效应改变了消费者的实际购买力，使消费者移动到另一条无差异曲线上。"
-          },
-          {
-            id: 11,
-            question: "I=PxX+PyY是消费者的（  ）",
-            options: ["需求函数", "效用函数", "预算约束方程", "不确定函数"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "这是预算约束方程的代数形式，表示消费者的全部收入用于购买两种商品。"
-          },
-          {
-            id: 12,
-            question: "序数效用论对消费者偏好的假设包括（  ）",
-            options: ["边际效用递减", "货币边际效用不变", "传递性", "不饱和性"],
-            answer: [2, 3],
-            isMultiple: true,
-            rationale: "序数效用论假设：完备性、传递性、不饱和性、可替代性、凸性。边际效用递减和货币边际效用不变是基数效用论的假设。"
-          },
-          {
-            id: 13,
-            question: "当消费者处于均衡时（  ）",
-            options: ["最后一单位货币购买不同商品所增加的满足程度相等", "每种商品的总效用相等", "每种商品的替代效应等于收入效应", "所购买的商品的边际效用相等"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "均衡条件MUx/Px=MUy/Py即最后一单位货币购买不同商品带来的边际效用相等。"
-          },
-          {
-            id: 14,
-            question: "商品的边际替代率递减规律决定了无差异曲线（  ）",
-            options: ["凸向原点", "凹向原点", "垂直于横轴", "平行于横轴"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "边际替代率递减意味着随着X增加、Y减少，dy/dx的绝对值不断减小，曲线凸向原点。"
-          },
-          {
-            id: 15,
-            question: "效用达到最大时（  ）",
-            options: ["边际效用为最大", "边际效用为零", "边际效用为正", "边际效用为负"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "效用最大化时MU=0，继续消费边际效用为负，会减少总效用。"
-          },
-          {
-            id: 16,
-            question: "总效用递减时（  ）",
-            options: ["边际效用为最大", "边际效用为零", "边际效用为正", "边际效用为负"],
-            answer: 3,
-            isMultiple: false,
-            rationale: "总效用递减意味着边际效用为负，每增加一单位消费反而减少总效用。"
-          },
-          {
-            id: 17,
-            question: "同一条无差异曲线上的不同点表示（  ）",
-            options: ["效用水平不同，但所消费的两种商品组合比例相同", "效用水平相同，但所消费的两种商品组合比例不同", "效用水平不同，两种商品的组合比例也不相同", "效用水平相同，两种商品的组合比例相同"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "无差异曲线的定义：曲线上所有点代表的效用水平相同，但商品组合比例不同。"
-          },
-          {
-            id: 18,
-            question: "预算线的位置和斜率取决于（  ）",
-            options: ["消费者的收入", "商品的价格", "消费者的收入和商品价格", "消费者的偏好、收入和商品的价格"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "预算线斜率由价格比Px/Py决定，位置由收入I决定。与偏好无关。"
-          },
-          {
-            id: 19,
-            question: "商品x和y的价格按相同的比例上升，而收入不变，预算线（  ）",
-            options: ["向左下方平行移动", "向右上方平行移动", "向左下方或右上方平行移动", "不变动"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "价格同比例上升意味着购买力下降，预算线向左下方平行移动（斜率不变）。"
-          },
-          {
-            id: 20,
-            question: "预算线绕着它与横轴的交点逆时针转动是因为 （  ）",
-            options: ["商品x的价格上升", "商品x的价格上升，商品y的价格上升", "消费者收入下降", "商品x的价格不变，商品y的价格上升"],
-            answer: 3,
-            isMultiple: false,
-            rationale: "与横轴交点为I/Px。若Px不变、Py上升，则I/Py减小，预算线绕(I/Px,0)点逆时针转动。"
-          },
-          {
-            id: 21,
-            question: "假定其他条件不变，如果某种商品的价格下降，根据效用最大化原则，消费者则会（  ）这种商品的购买。（  ）",
-            options: ["增加", "减少", "不改变", "增加或减少"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "价格下降导致需求量增加（需求定律），消费者会增加该商品购买以获得更大效用。"
-          },
-          {
-            id: 22,
-            question: "假定x和y的价格不变，当MRSxy>Px/Py时，消费者为达到最大满足，他将（  ）",
-            options: ["增购x，减少 y", "减少x，增购y", "同时增购x，y", "同时减少x，y"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "MRSxy>Px/Py意味着消费者愿意用更多Y换X的意愿大于市场比率，应增购X减购Y。"
-          },
-          {
-            id: 23,
-            question: "若无差异曲线上一点的斜率dy/dx=-1/2，这意味着消费者有更多的x商品时，他愿意放弃（  ）单位x而获得一单位y",
-            options: ["0.5", "2", "1", "1.5"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "斜率dy/dx=-1/2意味着dx/dy=-2，即获得1单位Y需要放弃2单位X。"
-          },
-          {
-            id: 24,
-            question: "当商品价格不变，而消费者收入变动时，连结消费者诸均衡点的曲线称为（  ）",
-            options: ["需求曲线", "价格—消费曲线", "收入—消费曲线", "恩格尔曲线"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "收入-消费曲线(ICC)表示在商品价格不变时，消费者收入变化时均衡点的轨迹。"
-          },
-          {
-            id: 25,
-            question: "恩格尔曲线从（  ）导出",
-            options: ["价格—消费线", "需求曲线", "收入—消费线", "无差异曲线"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "恩格尔曲线表示收入与某商品需求量之间的关系，由收入-消费曲线导出。"
-          },
-          {
-            id: 26,
-            question: "需求曲线从（  ）导出",
-            options: ["价格—消费曲线", "收入—消费曲线", "无差异曲线", "预算线"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "需求曲线表示商品价格与需求量关系，从价格-消费曲线导出。"
-          },
-          {
-            id: 27,
-            question: "下列哪种情况是边际效用：（  ）",
-            options: ["面包的消费量从一个增加到两个，满足程度从5个效用单位增加到8个效用单位，即增加了3个效用单位", "消费两个面包获得的满足程度为13个效用单位", "消费两个面包，平均每个面包获得的满足程度为6.5个效用单位", "消费1个面包，获得的满足程度为8个效用单位"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "边际效用是消费增量带来的效用增量，即从1个到2个时增加3个效用单位。"
-          },
-          {
-            id: 28,
-            question: "已知商品X的价格为1.5元，商品Y的价格为1元，如果消费者从这两种商品得到最大效用的时候商品Y的边际效用是30，那么商品X的边际效用应该是",
-            options: ["20", "30", "45", "50"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "根据MUx/Px=MUy/Py，MUx/1.5=30/1，故MUx=30×1.5=45。"
-          },
-          {
-            id: 29,
-            question: "某人消费苹果和香蕉。假定他的收入增加了一倍，苹果与香蕉的价格也上升了一倍。那么，他的预算线将",
-            options: ["仍然不变", "向外移动，但斜率不变", "向外移动，但更陡峭了", "向外移动，但更平坦了"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "收入和价格同比例变化意味着实际购买力不变，预算线位置和斜率都不变。"
-          },
-          {
-            id: 30,
-            question: "无差异曲线为斜率不变的直线时，表示相结合的两种商品是（  ）",
-            options: ["可以替代的", "完全替代的", "互补的", "互不相关的"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "斜率不变的直线无差异曲线表示两种商品可以按固定比例完全替代。"
-          },
-          {
-            id: 31,
-            question: "已知消费者的收入为50元，商品X的价格为5元，商品Y的价格为4元。假定消费者计划购买6单位X商品和5单位Y商品，商品X和Y的边际效用分别为60和30。如要得到最大效用，他应该：",
-            options: ["增购X和减少Y的购买量", "增购Y和减少X的购买量", "同时减少X和Y 的购买量", "同时增加X和Y 的购买量"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "MUx/Px=60/5=12，MUy/Py=30/4=7.5，MUx/Px > MUy/Py，说明应增购X减购Y。"
-          },
-          {
-            id: 32,
-            question: "有些人在收入比较低时买了黑白电视机，而在收入提高时则去购买彩色电视机，黑白电视机对这些人来说是（  ）",
-            options: ["生活必需品", "奢侈品", "劣质产品", "吉芬商品"],
-            answer: 2,
-            isMultiple: false,
-            rationale: "黑白电视机随收入增加而需求量减少，符合劣质品定义（收入弹性为负）。"
-          }
-        ]
-      },
-      'micro-econ-04-judge': {
-        id: 'micro-econ-04-judge',
-        title: '微观经济学04-判断',
-        description: '消费者行为理论判断题测验',
-        questions: [
-          {
-            id: 1,
-            question: "在同一条无差异曲线上，消费者得到的效用水平是无差异的。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "无差异曲线的定义就是曲线上所有点代表的效用水平相同。"
-          },
-          {
-            id: 2,
-            question: "无差异曲线的斜率为固定负数时，表明两种商品是完全互补的。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "斜率为固定负数（直线）表示完全替代品。完全互补品的无差异曲线是直角折线。"
-          },
-          {
-            id: 3,
-            question: "当消费某种物品的边际效用为负时，则总效用达极大值。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "总效用极大值时MU=0。MU为负时总效用处于递减阶段，不是极大值。"
-          },
-          {
-            id: 4,
-            question: "当消费者从物品消费中所获得的总效用不断增加时，边际总效用总是正的。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "总效用增加意味着边际效用为正。只有MU<0时总效用才会减少。"
-          },
-          {
-            id: 5,
-            question: "当边际效用减少时，总效用也是减少的。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "边际效用减少并不意味着为负。只要MU>0，总效用仍在增加，只是增速放缓。"
-          },
-          {
-            id: 6,
-            question: "基数效用论的分析方法包括边际效用分析和无差异曲线分析方法。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "基数效用论用边际效用分析，序数效用论用无差异曲线分析。"
-          },
-          {
-            id: 7,
-            question: "吉芬物品和低档物品的需求曲线都向右上方倾斜。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "吉芬物品需求曲线向右上方倾斜，但低档物品需求曲线仍向右下方倾斜。"
-          },
-          {
-            id: 8,
-            question: "正常物品的替代效应同价格呈同方向变动。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "正常物品的替代效应与价格呈反方向变动：价格上涨，替代效应使需求量减少。"
-          },
-          {
-            id: 9,
-            question: "所有吉芬物品都是低档物品。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "吉芬物品必须是收入效应大于替代效应的低档品，因此所有吉芬物品都是低档物品。"
-          },
-          {
-            id: 10,
-            question: "吉芬物品是一种需求量与价格同方向变化的特殊商品。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "吉芬物品的定义就是需求量与价格同方向变动（需求曲线向右上方倾斜）。"
-          },
-          {
-            id: 11,
-            question: "商品价格变化引起的收入效应，表现为相应的消费者的均衡点沿原有的无差异曲线运动。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "收入效应使消费者实际购买力改变，均衡点移动到另一条无差异曲线上。沿原曲线移动的是替代效应。"
-          },
-          {
-            id: 12,
-            question: "若某商品的价格变化，其替代效应小于收入效应，则该商品是低档品。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "替代效应小于收入效应是吉芬物品的特征。低档品不一定是吉芬物品。"
-          },
-          {
-            id: 13,
-            question: "若MUx/Px＞MUy/Py，消费者应增加X商品的购买，减少Y商品的购买，最终可实现效用最大化。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "MUx/Px > MUy/Py意味着最后一单位货币买X获得更多效用，应增X减Y以接近均衡。"
-          },
-          {
-            id: 14,
-            question: "需求曲线上的任何一点都代表着消费者的最大满足状态。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "需求曲线的每一点都对应消费者的最优选择（在给定价格和预算约束下），代表该价格下的最大满足。"
-          },
-          {
-            id: 15,
-            question: "消费者均衡之点可以是无差异曲线与消费可能线的相切点。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "消费可能线即预算线。消费者均衡条件就是无差异曲线与预算线相切。"
-          },
-          {
-            id: 16,
-            question: "无差异曲线离原点越远，表示消费者所得到的总效用越小。",
-            options: ["正确", "错误"],
-            answer: 1,
-            isMultiple: false,
-            rationale: "无差异曲线离原点越远，代表的商品组合越多，效用水平越高。"
-          },
-          {
-            id: 17,
-            question: "如果消费者的收入增加而商品的价格不变，则无差异曲线向右上方平行移动。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "收入增加（价格不变）使预算线右移，对应无差异曲线向右上方平行移动（效用提高）。"
-          },
-          {
-            id: 18,
-            question: "用商品X代替商品Y的边际替代率等于3意味着，1单位商品X和3单位商品Y具有同样的总效用。",
-            options: ["正确", "错误"],
-            answer: 0,
-            isMultiple: false,
-            rationale: "MRSxy=3意味着增加1单位X可代替3单位Y而不改变总效用。"
-          }
-        ]
-      },
-      'micro-econ-03': {
-        id: 'micro-econ-03',
-        title: '微观经济学03',
-        description: '价格理论判断题测验',
-        questions: [
-          { id: 1, question: "价格分析是微观经济学分析的核心。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "价格理论是微观经济学的核心，市场机制通过价格来配置资源。" },
-          { id: 2, question: "微观经济学的研究对象是包括单个消费者、单个生产者、单个市场在内的个体经济单位。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "微观经济学研究个体经济单位的行为和决策，包括消费者、生产者和市场。" },
-          { id: 3, question: "若某商品的需求价格弹性Ed=0.6，在其他条件不变的情况下，卖者提高价格肯定增加销售收入。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "需求缺乏弹性(Ed<1)时，价格上涨会导致需求量减少幅度小于价格上涨幅度，因此销售收入增加。" },
-          { id: 4, question: "在其他条件不变的情况下，需求缺乏弹性的商品的价格与销售收入呈同方向变动关系。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "需求缺乏弹性时，价格上涨使销售收入增加，价格下降使销售收入减少。" },
-          { id: 5, question: "需求量的变动是指商品本身价格变动所引起的该商品的需求数量的变动。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "需求量的变动是指沿着同一条需求曲线的变动，由商品本身价格变动引起。而需求曲线的移动是由非价格因素引起的。" },
-          { id: 6, question: "在其他条件不变的情况下，当消费者的收入发生变化时，会引起需求曲线的移动。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "消费者收入是影响需求的非价格因素之一，收入变化会导致需求曲线平移。" },
-          { id: 7, question: "Ed＞1的商品，在其他条件不变的情况下，降低价格会增加厂商的销售收入。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "需求富有弹性(Ed>1)时，价格下降会导致需求量增加幅度大于价格下降幅度，因此销售收入增加。" },
-          { id: 8, question: "若某商品的Ed＜1，表明当该商品价格下降20%时，该商品需求量减少小于20%。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "Ed<1表示需求缺乏弹性，价格下降20%时，需求量减少幅度小于20%，即减少量小于20%。" },
-          { id: 9, question: "卖者提高价格肯定会增加销售收入。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "不一定。如果商品需求富有弹性(Ed>1)，提高价格反而会减少销售收入。只有当Ed<1时，提高价格才能增加收入。" },
-          { id: 10, question: "在几何图形上，供给量的变动表现为商品的价格-供给量组合点沿着同一条既定的供给曲线运动。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "供给量的变动是由商品本身价格变动引起的，表现为沿着供给曲线的移动。" },
-          { id: 11, question: "在几何图形上，需求水平的变动表现为商品的价格-需求量组合点沿着同一条既定的需求曲线运动。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "需求水平的变动（由非价格因素引起）表现为需求曲线的平移，而非沿着需求曲线的移动。沿着需求曲线移动的是需求量的变动。" },
-          { id: 12, question: "当两种商品中一种商品的价格发生变动时，这两种商品的需求量都同时增加或减少，则这两种商品的需求交叉价格弹性系数为正。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "如果两种商品是替代品，一种商品价格变动使另一种商品需求量同方向变动，交叉弹性为正。如果两种商品是互补品，交叉弹性为负。题目描述的是替代品关系。" },
-          { id: 13, question: "某商品的可替代品越多，相近程度越高，则该商品需求弹性越大。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "可替代品越多，消费者越容易转向其他商品，需求价格弹性越大。" },
-          { id: 14, question: "商品用途越广，需求价格弹性越大。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "商品用途越广，消费者对价格越敏感，价格上涨时更容易减少用量或寻找替代用途，因此弹性越大。" },
-          { id: 15, question: "任何情况下商品的需求量与价格都是反方向变化的。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "这是吉芬商品的特殊情况。吉芬商品的需求量与价格同方向变动，因为其收入效应大于替代效应。" },
-          { id: 16, question: "当对农产品的需求缺乏弹性时，粮食丰收，粮价下跌，农民收入反而会减少。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "农产品需求缺乏弹性，丰收导致供给增加，价格大幅下跌，收入减少。这就是'谷贱伤农'现象。" },
-          { id: 17, question: "如果两种商品具有替代关系，则相应的需求交叉价格弹性系数为负。", options: ["正确", "错误"], answer: 1, isMultiple: false, rationale: "替代品的交叉价格弹性系数为正，因为一种商品价格上涨会导致另一种商品需求量增加。互补品的交叉弹性才为负。" },
-          { id: 18, question: "正常物品的需求量与消费者的收入水平呈同方向变动。", options: ["正确", "错误"], answer: 0, isMultiple: false, rationale: "正常物品的定义就是需求量与收入同方向变动。收入增加，需求量增加；收入减少，需求量减少。" }
-        ]
-      }
-    };
-
-    // ==================== 图标组件 ====================
-    const CheckIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
-    );
-
-    const XIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    );
-
-    const BackIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-    );
-
-    const LockIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-      </svg>
-    );
-
-    const BookIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-      </svg>
-    );
-
-    const ChartIcon = ({ className }) => (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="18" y1="20" x2="18" y2="10"></line>
-        <line x1="12" y1="20" x2="12" y2="4"></line>
-        <line x1="6" y1="20" x2="6" y2="14"></line>
-      </svg>
-    );
-
     // ==================== 组件 ====================
     function HomePage({ onSelectQuiz }) {
+      const [quizList, setQuizList] = React.useState([]);
+      const [loading, setLoading] = React.useState(true);
+
+      React.useEffect(() => {
+        fetch('data/quiz-list.json')
+          .then(res => res.json())
+          .then(data => {
+            setQuizList(data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error("Failed to load quiz list:", err);
+            setLoading(false);
+          });
+      }, []);
+
+      if (loading) {
+        return <div className="home-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>正在加载测验列表...</div>;
+      }
+
       return (
         <div className="home-page">
           <header className="home-header">
@@ -834,17 +277,36 @@
     }
 
     function QuizPage({ quizId, onBack }) {
-      const quiz = quizDataMap[quizId];
+      const [quiz, setQuiz] = React.useState(null);
+      const [loading, setLoading] = React.useState(true);
       const [currentIndex, setCurrentIndex] = React.useState(0);
       const [selectedAnswers, setSelectedAnswers] = React.useState({});
       const [showRationale, setShowRationale] = React.useState(false);
       const [score, setScore] = React.useState(0);
       const [isMultiConfirmed, setIsMultiConfirmed] = React.useState(false);
 
+      React.useEffect(() => {
+        setLoading(true);
+        fetch(`data/${quizId}.json`)
+          .then(res => res.json())
+          .then(data => {
+            setQuiz(data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error("Failed to load quiz data:", err);
+            setLoading(false);
+          });
+      }, [quizId]);
+
+      if (loading) {
+        return <div className="quiz-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>正在加载试题...</div>;
+      }
+
       if (!quiz) {
         return (
           <div style={{ padding: '40px', textAlign: 'center' }}>
-            <p>测验不存在</p>
+            <p>测验不存在或加载失败</p>
             <button onClick={onBack} className="nav-btn" style={{ marginTop: '20px' }}>返回</button>
           </div>
         );

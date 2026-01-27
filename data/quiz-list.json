@@ -1,0 +1,52 @@
+[
+  {
+    "id": "micro-econ-02",
+    "title": "微观经济学02",
+    "description": "需求、供给与弹性专题测验",
+    "questionCount": 31,
+    "color": "yellow",
+    "tags": ["微观经济学", "需求", "供给", "弹性"]
+  },
+  {
+    "id": "micro-econ-03",
+    "title": "微观经济学03",
+    "description": "价格理论判断题测验",
+    "questionCount": 18,
+    "color": "purple",
+    "tags": ["微观经济学", "价格", "判断题"]
+  },
+  {
+    "id": "micro-econ-04-select",
+    "title": "微观经济学04-选择",
+    "description": "消费者行为理论不定项选择题",
+    "questionCount": 32,
+    "color": "blue",
+    "tags": ["微观经济学", "消费者行为", "效用论"]
+  },
+  {
+    "id": "micro-econ-04-judge",
+    "title": "微观经济学04-判断",
+    "description": "消费者行为理论判断题测验",
+    "questionCount": 18,
+    "color": "green",
+    "tags": ["微观经济学", "消费者行为", "判断题"]
+  },
+  {
+    "id": "placeholder-1",
+    "title": "宏观经济学基础",
+    "description": "国民收入与货币政策",
+    "questionCount": 0,
+    "locked": true,
+    "color": "gray",
+    "tags": ["宏观经济学"]
+  },
+  {
+    "id": "placeholder-2",
+    "title": "市场结构理论",
+    "description": "完全竞争与垄断市场分析",
+    "questionCount": 0,
+    "locked": true,
+    "color": "green",
+    "tags": ["市场结构"]
+  }
+]

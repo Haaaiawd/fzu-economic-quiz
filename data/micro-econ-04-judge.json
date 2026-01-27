@@ -1,0 +1,151 @@
+{
+  "id": "micro-econ-04-judge",
+  "title": "微观经济学04-判断",
+  "description": "消费者行为理论判断题测验",
+  "questions": [
+    {
+      "id": 1,
+      "question": "在同一条无差异曲线上，消费者得到的效用水平是无差异的。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "无差异曲线的定义就是曲线上所有点代表的效用水平相同。"
+    },
+    {
+      "id": 2,
+      "question": "无差异曲线的斜率为固定负数时，表明两种商品是完全互补的。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "斜率为固定负数（直线）表示完全替代品。完全互补品的无差异曲线是直角折线。"
+    },
+    {
+      "id": 3,
+      "question": "当消费某种物品的边际效用为负时，则总效用达极大值。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "总效用极大值时MU=0。MU为负时总效用处于递减阶段，不是极大值。"
+    },
+    {
+      "id": 4,
+      "question": "当消费者从物品消费中所获得的总效用不断增加时，边际总效用总是正的。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "总效用增加意味着边际效用为正。只有MU<0时总效用才会减少。"
+    },
+    {
+      "id": 5,
+      "question": "当边际效用减少时，总效用也是减少的。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "边际效用减少并不意味着为负。只要MU>0，总效用仍在增加，只是增速放缓。"
+    },
+    {
+      "id": 6,
+      "question": "基数效用论的分析方法包括边际效用分析和无差异曲线分析方法。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "基数效用论用边际效用分析，序数效用论用无差异曲线分析。"
+    },
+    {
+      "id": 7,
+      "question": "吉芬物品和低档物品的需求曲线都向右上方倾斜。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "吉芬物品需求曲线向右上方倾斜，但低档物品需求曲线仍向右下方倾斜。"
+    },
+    {
+      "id": 8,
+      "question": "正常物品的替代效应同价格呈同方向变动。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "正常物品的替代效应与价格呈反方向变动：价格上涨，替代效应使需求量减少。"
+    },
+    {
+      "id": 9,
+      "question": "所有吉芬物品都是低档物品。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "吉芬物品必须是收入效应大于替代效应的低档品，因此所有吉芬物品都是低档物品。"
+    },
+    {
+      "id": 10,
+      "question": "吉芬物品是一种需求量与价格同方向变化的特殊商品。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "吉芬物品的定义就是需求量与价格同方向变动（需求曲线向右上方倾斜）。"
+    },
+    {
+      "id": 11,
+      "question": "商品价格变化引起的收入效应，表现为相应的消费者的均衡点沿原有的无差异曲线运动。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "收入效应使消费者实际购买力改变，均衡点移动到另一条无差异曲线上。沿原曲线移动的是替代效应。"
+    },
+    {
+      "id": 12,
+      "question": "若某商品的价格变化，其替代效应小于收入效应，则该商品是低档品。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "替代效应小于收入效应是吉芬物品的特征。低档品不一定是吉芬物品。"
+    },
+    {
+      "id": 13,
+      "question": "若MUx/Px＞MUy/Py，消费者应增加X商品的购买，减少Y商品的购买，最终可实现效用最大化。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "MUx/Px > MUy/Py意味着最后一单位货币买X获得更多效用，应增X减Y以接近均衡。"
+    },
+    {
+      "id": 14,
+      "question": "需求曲线上的任何一点都代表着消费者的最大满足状态。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "需求曲线的每一点都对应消费者的最优选择（在给定价格和预算约束下），代表该价格下的最大满足。"
+    },
+    {
+      "id": 15,
+      "question": "消费者均衡之点可以是无差异曲线与消费可能线的相切点。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "消费可能线即预算线。消费者均衡条件就是无差异曲线与预算线相切。"
+    },
+    {
+      "id": 16,
+      "question": "无差异曲线离原点越远，表示消费者所得到的总效用越小。",
+      "options": ["正确", "错误"],
+      "answer": 1,
+      "isMultiple": false,
+      "rationale": "无差异曲线离原点越远，代表的商品组合越多，效用水平越高。"
+    },
+    {
+      "id": 17,
+      "question": "如果消费者的收入增加而商品的价格不变，则无差异曲线向右上方平行移动。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "收入增加（价格不变）使预算线右移，对应无差异曲线向右上方平行移动（效用提高）。"
+    },
+    {
+      "id": 18,
+      "question": "用商品X代替商品Y的边际替代率等于3意味着，1单位商品X和3单位商品Y具有同样的总效用。",
+      "options": ["正确", "错误"],
+      "answer": 0,
+      "isMultiple": false,
+      "rationale": "MRSxy=3意味着增加1单位X可代替3单位Y而不改变总效用。"
+    }
+  ]
+}
