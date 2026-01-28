@@ -260,7 +260,7 @@
       const [error, setError] = React.useState(null);
 
       React.useEffect(() => {
-        fetch('data/quiz-list.json')
+        fetch('data/quiz-list.json?t=' + Date.now())
           .then(res => {
             if (!res.ok) {
               throw new Error(`HTTP ${res.status}: 无法获取测验列表 (${res.url})`);
@@ -457,7 +457,7 @@
       React.useEffect(() => {
         setLoading(true);
         setError(null);
-        fetch(`data/${quizId}.json`)
+        fetch(`data/${quizId}.json?t=${Date.now()}`)
           .then(res => {
             if (!res.ok) {
               throw new Error(`HTTP ${res.status}: 无法加载题目数据 (${res.url})`);
