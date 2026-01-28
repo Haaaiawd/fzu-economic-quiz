@@ -64,6 +64,22 @@
     "tags": ["微观经济学", "成本理论", "判断题"]
   },
   {
+    "id": "micro-econ-07-select",
+    "title": "微观经济学07-选择",
+    "description": "完全竞争市场选择题",
+    "questionCount": 19,
+    "color": "indigo",
+    "tags": ["微观经济学", "完全竞争", "选择"]
+  },
+  {
+    "id": "micro-econ-07-judge",
+    "title": "微观经济学07-判断",
+    "description": "完全竞争市场判断题测验",
+    "questionCount": 24,
+    "color": "violet",
+    "tags": ["微观经济学", "完全竞争", "判断题"]
+  },
+  {
     "id": "placeholder-1",
     "title": "宏观经济学基础",
     "description": "国民收入与货币政策",
