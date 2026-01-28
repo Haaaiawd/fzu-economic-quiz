@@ -270,6 +270,7 @@
       const [quizList, setQuizList] = React.useState([]);
       const [loading, setLoading] = React.useState(true);
       const [error, setError] = React.useState(null);
+      const [progressMap, setProgressMap] = React.useState({});
 
       React.useEffect(() => {
         fetch('data/quiz-list.json?t=' + Date.now())
@@ -281,6 +282,26 @@
           })
           .then(data => {
             setQuizList(data);
+            
+            // 读取本地进度
+            const newProgress = {};
+            data.forEach(q => {
+              try {
+                const saved = localStorage.getItem(`quiz-progress-${q.id}`);
+                if (saved) {
+                  const p = JSON.parse(saved);
+                  // 计算已答题数
+                  const answered = p.selectedAnswers ? Object.keys(p.selectedAnswers).length : 0;
+                  if (answered > 0) {
+                    newProgress[q.id] = answered;
+                  }
+                }
+              } catch (e) {
+                console.warn('Failed to parse progress for', q.id);
+              }
+            });
+            setProgressMap(newProgress);
+            
             setLoading(false);
           })
           .catch(err => {
@@ -312,7 +333,11 @@
             <p className="home-subtitle">选择要开始的测验</p>
           </header>
           <main className="quiz-grid">
-            {quizList.map((quiz) => (
+            {quizList.map((quiz) => {
+              const progress = progressMap[quiz.id];
+              const hasProgress = progress > 0 && progress < quiz.questionCount;
+              
+              return (
               <div
                 key={quiz.id}
                 className={`quiz-card ${quiz.locked ? 'locked' : ''}`}
@@ -328,6 +353,14 @@
                     {quiz.tags.map((tag, idx) => <span key={idx} className="tag">{tag}</span>)}
                   </div>
                 )}
+                {hasProgress && (
+                  <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: 'bold', color: '#000' }}>
+                    <div style={{ flex: 1, height: '6px', background: '#e5e7eb', border: '1px solid #000' }}>
+                      <div style={{ width: `${(progress / quiz.questionCount) * 100}%`, height: '100%', background: '#4ade80' }}></div>
+                    </div>
+                    <span>{Math.round((progress / quiz.questionCount) * 100)}%</span>
+                  </div>
+                )}
                 {quiz.locked && (
                   <div className="quiz-lock">
                     <LockIcon className="icon-sm" />
@@ -335,14 +368,16 @@
                   </div>
                 )}
               </div>
-            ))}
+            )})}
           </main>
         </div>
       );
     }
 
     function QuizCard({ question, index, total, onSelect, selectedAnswers, showRationale, isMultiConfirmed, onConfirmMulti, onShowRationale }) {
-      const currentSelection = selectedAnswers[question.id];
+      if (!question) return null;
+
+      const currentSelection = selectedAnswers ? selectedAnswers[question.id] : undefined;
       const isAnswered = question.isMultiple ? isMultiConfirmed : currentSelection !== undefined;
       const hasSelection = currentSelection && currentSelection.length > 0;
 
@@ -390,6 +425,20 @@
                 className={getOptionClass(idx)}
               >
                 <span className="option-content">
+                  <span style={{ 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    width: '24px',
+                    height: '24px',
+                    border: '2px solid currentColor',
+                    marginRight: '12px',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    flexShrink: 0
+                  }}>
+                    {idx + 1}
+                  </span>
                   {isMultiChoice && (
                     <span className="option-checkbox">
                       {currentSelection?.includes(idx) && <span className="checkbox-check" />}
@@ -403,12 +452,12 @@
           </div>
           {showConfirmBtn && (
             <button onClick={onConfirmMulti} className="nav-btn primary" style={{ marginTop: '16px', width: '100%' }}>
-              确认答案
+              确认答案 (Enter)
             </button>
           )}
           {isAnswered && !showRationale && (
             <button onClick={onShowRationale} className="nav-btn" style={{ marginTop: '16px', width: '100%', fontSize: '14px', padding: '8px', boxShadow: '2px 2px 0 0 #000' }}>
-              查看解析
+              查看解析 (Enter)
             </button>
           )}
           {showRationale && (
@@ -515,7 +564,11 @@
         }
       }, [currentIndex, selectedAnswers, score, quiz]);
 
-      // 清除保存的进度
+      // 派生状态
+      const question = quiz?.questions?.[currentIndex];
+      const isLastQuestion = quiz?.questions ? currentIndex === quiz.questions.length - 1 : false;
+
+      // 动作处理函数
       const clearProgress = () => {
         localStorage.removeItem(STORAGE_KEY);
         setHasSavedProgress(false);
@@ -526,15 +579,127 @@
         setIsMultiConfirmed(false);
       };
 
-      // 继续上次答题
       const continueProgress = () => {
         setHasSavedProgress(false);
-        // 如果当前题目已回答，显示解析
-        const currentQ = quiz.questions[currentIndex];
-        if (selectedAnswers[currentQ.id] !== undefined) {
+        if (question && selectedAnswers[question.id] !== undefined) {
           setShowRationale(true);
         }
       };
+
+      const restart = () => {
+        localStorage.removeItem(STORAGE_KEY);
+        setCurrentIndex(0);
+        setSelectedAnswers({});
+        setShowRationale(false);
+        setScore(0);
+        setIsMultiConfirmed(false);
+      };
+
+      const handleMultiSelect = (idx) => {
+        if (isMultiConfirmed || !question) return;
+        const current = selectedAnswers[question.id] || [];
+        const newSelection = current.includes(idx) ? current.filter(i => i !== idx) : [...current, idx];
+        setSelectedAnswers({ ...selectedAnswers, [question.id]: newSelection });
+      };
+
+      const handleSingleSelect = (idx) => {
+        if (selectedAnswers[question.id] !== undefined || !question) return;
+        const isCorrect = idx === question.answer;
+        setSelectedAnswers({ ...selectedAnswers, [question.id]: idx });
+        setShowRationale(true); 
+        if (isCorrect) setScore(s => s + 1);
+      };
+
+      const confirmMultiAnswer = () => {
+        if (!question) return;
+        const selection = selectedAnswers[question.id] || [];
+        const isCorrect = selection.length > 0
+          && selection.every(i => question.answer.includes(i))
+          && selection.length === question.answer.length;
+        setIsMultiConfirmed(true);
+        setShowRationale(true); 
+        if (isCorrect) setScore(s => s + 1);
+      };
+
+      const goNext = () => {
+        if (isLastQuestion) {
+          localStorage.removeItem(STORAGE_KEY);
+          setCurrentIndex(-1);
+        }
+        else {
+          const nextIdx = currentIndex + 1;
+          const nextQ = quiz.questions[nextIdx];
+          setCurrentIndex(nextIdx);
+          setIsMultiConfirmed(nextQ && selectedAnswers[nextQ.id] !== undefined);
+          setShowRationale(false); 
+        }
+      };
+
+      const goPrev = () => {
+        if (currentIndex > 0) {
+          const prevIdx = currentIndex - 1;
+          const prevQ = quiz.questions[prevIdx];
+          setCurrentIndex(prevIdx);
+          setIsMultiConfirmed(prevQ && selectedAnswers[prevQ.id] !== undefined);
+          setShowRationale(false); 
+        }
+      };
+
+      // 键盘控制支持 (现在在条件返回之前调用)
+      React.useEffect(() => {
+        const handleKeyDown = (e) => {
+          // 如果正在加载、出错或完成，忽略键盘事件
+          if (loading || error || hasSavedProgress || !quiz || currentIndex === -1) return;
+
+          // 避免在输入框中触发
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+          if (!question) return;
+
+          const hasSelection = selectedAnswers[question.id] !== undefined;
+          const isLocked = question.isMultiple ? isMultiConfirmed : hasSelection;
+
+          switch (e.key) {
+            case 'ArrowLeft':
+              e.preventDefault(); 
+              goPrev();
+              break;
+            case 'ArrowRight':
+              e.preventDefault();
+              goNext();
+              break;
+            case 'Enter':
+              e.preventDefault();
+              if (question.isMultiple && !isMultiConfirmed && (selectedAnswers[question.id]?.length || 0) > 0) {
+                 confirmMultiAnswer();
+              } else if (isLocked && !showRationale) {
+                 setShowRationale(true);
+              } else {
+                 goNext(); 
+              }
+              break;
+            case '1': case '2': case '3': case '4': case '5': 
+            case '6': case '7': case '8': case '9':
+              const num = parseInt(e.key);
+              if (num >= 1 && num <= question.options.length) {
+                const idx = num - 1;
+                if (!isLocked) {
+                  if (question.isMultiple) {
+                     handleMultiSelect(idx);
+                  } else {
+                     handleSingleSelect(idx);
+                  }
+                }
+              }
+              break;
+          }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+      }, [loading, error, hasSavedProgress, quiz, currentIndex, selectedAnswers, showRationale, isMultiConfirmed, question]);
+
+      // ========== 渲染逻辑 (条件返回放在最后) ==========
 
       if (loading) {
         return <div className="quiz-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>正在加载试题...</div>;
@@ -560,7 +725,6 @@
         );
       }
 
-      // 如果有保存的进度，显示选择界面
       if (hasSavedProgress) {
         const answeredCount = Object.keys(selectedAnswers).length;
         const totalCount = quiz.questions.length;
@@ -580,68 +744,11 @@
         );
       }
 
-      const restart = () => {
-        localStorage.removeItem(STORAGE_KEY);
-        setCurrentIndex(0);
-        setSelectedAnswers({});
-        setShowRationale(false);
-        setScore(0);
-        setIsMultiConfirmed(false);
-      };
-
       if (currentIndex === -1) return <ResultPage score={score} total={quiz.questions.length} onRestart={restart} onBack={onBack} />;
 
-      const question = quiz.questions[currentIndex];
-      const isLastQuestion = currentIndex === quiz.questions.length - 1;
-      const isQuestionAnswered = selectedAnswers[question.id] !== undefined;
-
-      const handleMultiSelect = (idx) => {
-        if (isMultiConfirmed) return;
-        const current = selectedAnswers[question.id] || [];
-        const newSelection = current.includes(idx) ? current.filter(i => i !== idx) : [...current, idx];
-        setSelectedAnswers({ ...selectedAnswers, [question.id]: newSelection });
-      };
-
-      const handleSingleSelect = (idx) => {
-        if (selectedAnswers[question.id] !== undefined) return;
-        const isCorrect = idx === question.answer;
-        setSelectedAnswers({ ...selectedAnswers, [question.id]: idx });
-        setShowRationale(true); // Show rationale immediately on answer
-        if (isCorrect) setScore(s => s + 1);
-      };
-
-      const confirmMultiAnswer = () => {
-        const selection = selectedAnswers[question.id] || [];
-        const isCorrect = selection.length > 0
-          && selection.every(i => question.answer.includes(i))
-          && selection.length === question.answer.length;
-        setIsMultiConfirmed(true);
-        setShowRationale(true); // Show rationale immediately on confirmation
-        if (isCorrect) setScore(s => s + 1);
-      };
-
-      const goNext = () => {
-        if (isLastQuestion) {
-          // 清除保存的进度（测验完成）
-          localStorage.removeItem(STORAGE_KEY);
-          setCurrentIndex(-1);
-        }
-        else {
-          const nextIdx = currentIndex + 1;
-          setCurrentIndex(nextIdx);
-          setIsMultiConfirmed(selectedAnswers[quiz.questions[nextIdx].id] !== undefined);
-          setShowRationale(false); // Reset rationale visibility
-        }
-      };
-
-      const goPrev = () => {
-        if (currentIndex > 0) {
-          const prevIdx = currentIndex - 1;
-          setCurrentIndex(prevIdx);
-          setIsMultiConfirmed(selectedAnswers[quiz.questions[prevIdx].id] !== undefined);
-          setShowRationale(false); // Reset rationale visibility
-        }
-      };
+      if (!question) {
+        return <div style={{padding: '20px'}}>题目加载错误 (ID: {currentIndex}) <button onClick={restart}>重置</button></div>;
+      }
 
       return (
         <div className="quiz-page">
@@ -666,11 +773,17 @@
               onConfirmMulti={question.isMultiple ? confirmMultiAnswer : null}
               onShowRationale={() => setShowRationale(true)}
             />
+            
+            <div style={{ marginTop: '24px', padding: '12px', border: '2px dashed #9ca3af', borderRadius: '8px', fontSize: '12px', color: '#6b7280', display: 'flex', justifyContent: 'center', gap: '16px' }}>
+              <span><kbd style={{ background: '#eee', padding: '2px 4px', border: '1px solid #999', borderRadius: '3px', color: '#000' }}>1-9</kbd> 选择选项</span>
+              <span><kbd style={{ background: '#eee', padding: '2px 4px', border: '1px solid #999', borderRadius: '3px', color: '#000' }}>← / →</kbd> 上下题</span>
+              <span><kbd style={{ background: '#eee', padding: '2px 4px', border: '1px solid #999', borderRadius: '3px', color: '#000' }}>Enter</kbd> 确认/解析</span>
+            </div>
           </main>
           <footer className="quiz-footer">
             <div className="quiz-footer-inner">
-              <button onClick={goPrev} disabled={currentIndex === 0} className="nav-btn">上一题</button>
-              <button onClick={goNext} className="nav-btn primary">{isLastQuestion ? '查看结果' : '下一题 →'}</button>
+              <button onClick={goPrev} disabled={currentIndex === 0} className="nav-btn">← 上一题</button>
+              <button onClick={goNext} className="nav-btn primary">{isLastQuestion ? '查看结果 (Enter)' : '下一题 (Enter) →'}</button>
             </div>
           </footer>
         </div>
