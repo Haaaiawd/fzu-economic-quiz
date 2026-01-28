@@ -119,22 +119,4 @@
     "color": "rose",
     "tags": ["微观经济学", "一般均衡", "选择"]
   },
-  {
-    "id": "placeholder-1",
-    "title": "宏观经济学基础",
-    "description": "国民收入与货币政策",
-    "questionCount": 0,
-    "locked": true,
-    "color": "gray",
-    "tags": ["宏观经济学"]
-  },
-  {
-    "id": "placeholder-2",
-    "title": "市场结构理论",
-    "description": "完全竞争与垄断市场分析",
-    "questionCount": 0,
-    "locked": true,
-    "color": "green",
-    "tags": ["市场结构"]
-  }
 ]
