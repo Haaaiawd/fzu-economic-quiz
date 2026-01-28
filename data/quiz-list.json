@@ -96,6 +96,14 @@
     "tags": ["微观经济学", "不完全竞争", "判断题"]
   },
   {
+    "id": "micro-econ-09-select",
+    "title": "微观经济学09-选择",
+    "description": "要素市场理论选择题",
+    "questionCount": 13,
+    "color": "teal",
+    "tags": ["微观经济学", "要素市场", "选择"]
+  },
+  {
     "id": "placeholder-1",
     "title": "宏观经济学基础",
     "description": "国民收入与货币政策",
