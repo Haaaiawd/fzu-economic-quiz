@@ -171,22 +171,40 @@
     function HomePage({ onSelectQuiz }) {
       const [quizList, setQuizList] = React.useState([]);
       const [loading, setLoading] = React.useState(true);
+      const [error, setError] = React.useState(null);
 
       React.useEffect(() => {
         fetch('data/quiz-list.json')
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}: 无法获取测验列表 (${res.url})`);
+            }
+            return res.json();
+          })
           .then(data => {
             setQuizList(data);
             setLoading(false);
           })
           .catch(err => {
             console.error("Failed to load quiz list:", err);
+            setError(err.message);
             setLoading(false);
           });
       }, []);
 
       if (loading) {
-        return <div className="home-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>正在加载测验列表...</div>;
+        return <div className="home-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>正在加载测验列表...</div>;
+      }
+
+      if (error) {
+        return (
+          <div className="home-page" style={{ padding: '24px', textAlign: 'center' }}>
+            <div style={{ background: '#fee2e2', border: '3px solid #dc2626', padding: '16px', color: '#991b1b', fontWeight: 'bold' }}>
+              加载失败: {error}
+            </div>
+            <button onClick={() => window.location.reload()} className="nav-btn" style={{ marginTop: '20px' }}>重试</button>
+          </div>
+        );
       }
 
       return (
@@ -334,6 +352,7 @@
     function QuizPage({ quizId, onBack }) {
       const [quiz, setQuiz] = React.useState(null);
       const [loading, setLoading] = React.useState(true);
+      const [error, setError] = React.useState(null);
       const [currentIndex, setCurrentIndex] = React.useState(0);
       const [selectedAnswers, setSelectedAnswers] = React.useState({});
       const [showRationale, setShowRationale] = React.useState(false);
@@ -346,8 +365,14 @@
       // 加载测验数据
       React.useEffect(() => {
         setLoading(true);
+        setError(null);
         fetch(`data/${quizId}.json`)
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) {
+              throw new Error(`HTTP ${res.status}: 无法加载题目数据 (${res.url})`);
+            }
+            return res.json();
+          })
           .then(data => {
             setQuiz(data);
             // 检查是否有保存的进度
@@ -369,6 +394,7 @@
           })
           .catch(err => {
             console.error("Failed to load quiz data:", err);
+            setError(err.message);
             setLoading(false);
           });
       }, [quizId]);
@@ -411,10 +437,21 @@
         return <div className="quiz-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>正在加载试题...</div>;
       }
 
+      if (error) {
+        return (
+          <div className="quiz-page" style={{ padding: '24px', textAlign: 'center' }}>
+             <div style={{ background: '#fee2e2', border: '3px solid #dc2626', padding: '16px', color: '#991b1b', fontWeight: 'bold', marginBottom: '24px' }}>
+              加载失败: {error}
+            </div>
+            <button onClick={onBack} className="nav-btn">返回主页</button>
+          </div>
+        );
+      }
+
       if (!quiz) {
         return (
           <div style={{ padding: '40px', textAlign: 'center' }}>
-            <p>测验不存在或加载失败</p>
+            <p>测验内容为空</p>
             <button onClick={onBack} className="nav-btn" style={{ marginTop: '20px' }}>返回</button>
           </div>
         );
