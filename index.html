@@ -243,7 +243,7 @@
       );
     }
 
-    function QuizCard({ question, index, total, onSelect, selectedAnswers, showRationale, isMultiConfirmed, onConfirmMulti }) {
+    function QuizCard({ question, index, total, onSelect, selectedAnswers, showRationale, isMultiConfirmed, onConfirmMulti, onShowRationale }) {
       const currentSelection = selectedAnswers[question.id];
       const isAnswered = question.isMultiple ? isMultiConfirmed : currentSelection !== undefined;
       const hasSelection = currentSelection && currentSelection.length > 0;
@@ -306,6 +306,11 @@
           {showConfirmBtn && (
             <button onClick={onConfirmMulti} className="nav-btn primary" style={{ marginTop: '16px', width: '100%' }}>
               确认答案
+            </button>
+          )}
+          {isAnswered && !showRationale && (
+            <button onClick={onShowRationale} className="nav-btn" style={{ marginTop: '16px', width: '100%', fontSize: '14px', padding: '8px', boxShadow: '2px 2px 0 0 #000' }}>
+              查看解析
             </button>
           )}
           {showRationale && (
@@ -477,6 +482,17 @@
         );
       }
 
+      const restart = () => {
+        localStorage.removeItem(STORAGE_KEY);
+        setCurrentIndex(0);
+        setSelectedAnswers({});
+        setShowRationale(false);
+        setScore(0);
+        setIsMultiConfirmed(false);
+      };
+
+      if (currentIndex === -1) return <ResultPage score={score} total={quiz.questions.length} onRestart={restart} onBack={onBack} />;
+
       const question = quiz.questions[currentIndex];
       const isLastQuestion = currentIndex === quiz.questions.length - 1;
       const isQuestionAnswered = selectedAnswers[question.id] !== undefined;
@@ -492,7 +508,7 @@
         if (selectedAnswers[question.id] !== undefined) return;
         const isCorrect = idx === question.answer;
         setSelectedAnswers({ ...selectedAnswers, [question.id]: idx });
-        setShowRationale(true);
+        setShowRationale(true); // Show rationale immediately on answer
         if (isCorrect) setScore(s => s + 1);
       };
 
@@ -502,7 +518,7 @@
           && selection.every(i => question.answer.includes(i))
           && selection.length === question.answer.length;
         setIsMultiConfirmed(true);
-        setShowRationale(true);
+        setShowRationale(true); // Show rationale immediately on confirmation
         if (isCorrect) setScore(s => s + 1);
       };
 
@@ -515,28 +531,19 @@
         else {
           const nextIdx = currentIndex + 1;
           setCurrentIndex(nextIdx);
-          setIsMultiConfirmed(false);
-          setShowRationale(selectedAnswers[quiz.questions[nextIdx].id] !== undefined);
+          setIsMultiConfirmed(selectedAnswers[quiz.questions[nextIdx].id] !== undefined);
+          setShowRationale(false); // Reset rationale visibility
         }
       };
 
       const goPrev = () => {
         if (currentIndex > 0) {
-          setCurrentIndex(currentIndex - 1);
-          setShowRationale(true);
+          const prevIdx = currentIndex - 1;
+          setCurrentIndex(prevIdx);
+          setIsMultiConfirmed(selectedAnswers[quiz.questions[prevIdx].id] !== undefined);
+          setShowRationale(false); // Reset rationale visibility
         }
       };
-
-      const restart = () => {
-        localStorage.removeItem(STORAGE_KEY);
-        setCurrentIndex(0);
-        setSelectedAnswers({});
-        setShowRationale(false);
-        setScore(0);
-        setIsMultiConfirmed(false);
-      };
-
-      if (currentIndex === -1) return <ResultPage score={score} total={quiz.questions.length} onRestart={restart} onBack={onBack} />;
 
       return (
         <div className="quiz-page">
@@ -559,6 +566,7 @@
               showRationale={showRationale}
               isMultiConfirmed={isMultiConfirmed}
               onConfirmMulti={question.isMultiple ? confirmMultiAnswer : null}
+              onShowRationale={() => setShowRationale(true)}
             />
           </main>
           <footer className="quiz-footer">
