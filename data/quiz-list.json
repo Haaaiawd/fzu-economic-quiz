@@ -118,5 +118,13 @@
     "questionCount": 8,
     "color": "rose",
     "tags": ["微观经济学", "一般均衡", "选择"]
+  },
+  {
+    "id": "micro-econ-11-select",
+    "title": "微观经济学11-选择",
+    "description": "公共物品与市场失灵专题测验",
+    "questionCount": 15,
+    "color": "stone",
+    "tags": ["微观经济学", "公共物品", "外部性", "选择"]
   }
 ]
