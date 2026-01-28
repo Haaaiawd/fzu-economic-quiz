@@ -48,6 +48,22 @@
     "tags": ["微观经济学", "生产理论", "判断题"]
   },
   {
+    "id": "micro-econ-06-select",
+    "title": "微观经济学06-选择",
+    "description": "成本理论选择题",
+    "questionCount": 30,
+    "color": "pink",
+    "tags": ["微观经济学", "成本理论", "选择"]
+  },
+  {
+    "id": "micro-econ-06-judge",
+    "title": "微观经济学06-判断",
+    "description": "成本理论判断题测验",
+    "questionCount": 23,
+    "color": "cyan",
+    "tags": ["微观经济学", "成本理论", "判断题"]
+  },
+  {
     "id": "placeholder-1",
     "title": "宏观经济学基础",
     "description": "国民收入与货币政策",
