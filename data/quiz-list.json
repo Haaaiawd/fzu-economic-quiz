@@ -80,6 +80,22 @@
     "tags": ["微观经济学", "完全竞争", "判断题"]
   },
   {
+    "id": "micro-econ-08-select",
+    "title": "微观经济学08-选择",
+    "description": "不完全竞争市场选择题",
+    "questionCount": 34,
+    "color": "amber",
+    "tags": ["微观经济学", "不完全竞争", "选择"]
+  },
+  {
+    "id": "micro-econ-08-judge",
+    "title": "微观经济学08-判断",
+    "description": "不完全竞争市场判断题测验",
+    "questionCount": 25,
+    "color": "lime",
+    "tags": ["微观经济学", "不完全竞争", "判断题"]
+  },
+  {
     "id": "placeholder-1",
     "title": "宏观经济学基础",
     "description": "国民收入与货币政策",
