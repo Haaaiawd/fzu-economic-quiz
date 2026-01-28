@@ -164,9 +164,21 @@
           }
 
           try {
-            const input = display ? `$$${children}$$` : `$${children}$`;
-            const options = MathJax.getMetricsFor(containerRef.current);
-            const svg = await MathJax.tex2svgPromise(input, options);
+            // 智能兼容：如果内容已经被 $ 或 $$ 包裹，自动去除，防止显示多余的定界符
+            let latex = children || '';
+            if (typeof latex === 'string') {
+              if (latex.startsWith('$$') && latex.endsWith('$$')) {
+                latex = latex.slice(2, -2);
+              } else if (latex.startsWith('$') && latex.endsWith('$')) {
+                latex = latex.slice(1, -1);
+              }
+            }
+
+            // MathJax 3 API 最佳实践：传递纯 LaTeX 字符串，通过 options 控制显示模式
+            const metrics = MathJax.getMetricsFor(containerRef.current);
+            const options = { ...metrics, display: display };
+            
+            const svg = await MathJax.tex2svgPromise(latex, options);
             containerRef.current.innerHTML = '';
             containerRef.current.appendChild(svg);
           } catch (err) {
