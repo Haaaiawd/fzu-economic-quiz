@@ -1,5 +1,13 @@
 [
   {
+    "id": "micro-econ-01-select",
+    "title": "微观经济学01-选择",
+    "description": "经济学导论选择题",
+    "questionCount": 15,
+    "color": "slate",
+    "tags": ["微观经济学", "导论", "选择"]
+  },
+  {
     "id": "micro-econ-02",
     "title": "微观经济学02",
     "description": "需求、供给与弹性专题测验",
@@ -102,6 +110,14 @@
     "questionCount": 13,
     "color": "teal",
     "tags": ["微观经济学", "要素市场", "选择"]
+  },
+  {
+    "id": "micro-econ-10-select",
+    "title": "微观经济学10-选择",
+    "description": "一般均衡与福利经济学选择题",
+    "questionCount": 8,
+    "color": "rose",
+    "tags": ["微观经济学", "一般均衡", "选择"]
   },
   {
     "id": "placeholder-1",
