@@ -32,6 +32,22 @@
     "tags": ["微观经济学", "消费者行为", "判断题"]
   },
   {
+    "id": "micro-econ-05-select",
+    "title": "微观经济学05-选择",
+    "description": "生产理论选择题",
+    "questionCount": 31,
+    "color": "orange",
+    "tags": ["微观经济学", "生产理论", "生产函数"]
+  },
+  {
+    "id": "micro-econ-05-judge",
+    "title": "微观经济学05-判断",
+    "description": "生产理论判断题测验",
+    "questionCount": 20,
+    "color": "red",
+    "tags": ["微观经济学", "生产理论", "判断题"]
+  },
+  {
     "id": "placeholder-1",
     "title": "宏观经济学基础",
     "description": "国民收入与货币政策",
